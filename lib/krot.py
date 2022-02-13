@@ -3,7 +3,7 @@
 # Kantorovich-Rubenstein Optimal Transport
 
 import cvxpy as cp
-from findiff import *
+from lib.findiff import *
 import matplotlib.pyplot as plt 
 
 plt.rcParams['font.family'] = 'Times New Roman'

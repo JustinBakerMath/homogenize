@@ -1,0 +1,13 @@
+#Removed Due to File Size(s)
+**/__pycache__/*
+#Raw Output
+out/*
+#Base Data Files (Generators Still Included)
+data/*.dat
+data/*.pkl
+data/*.npz 
+#References and Text Documents
+ref/*
+ref/tex/*
+#Swap Files
+*.swp
