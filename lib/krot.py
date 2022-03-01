@@ -10,11 +10,8 @@ plt.rcParams['font.family'] = 'Times New Roman'
 plt.rcParams['font.size'] = 18
 DPI = 160
 
-
 def lin_krot(x, rho, sigma, Gc, diff = 'ForwardEuler', vis=False):
-    
     FD = {'ForwardEuler' : D1FE, 'BackwardEuler' : D1BE, 'Centered': D1CD}
-
     n = len(x)
     h = x[1]-x[0]
 

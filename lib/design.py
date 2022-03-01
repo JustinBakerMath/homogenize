@@ -1,4 +1,3 @@
-
 import numpy as np
 
 def genLam(theta,shape,alpha=1,beta=.5):

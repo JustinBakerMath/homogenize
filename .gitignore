@@ -1,5 +1,6 @@
 #Removed Due to File Size(s)
 **/__pycache__/*
+**/.ipynb_checkpoints/*
 #Raw Output
 out/*
 #Base Data Files (Generators Still Included)
