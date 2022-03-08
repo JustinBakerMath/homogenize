@@ -10,6 +10,7 @@ from lib.classes.design import design1D
 """ KANTOROVICH RUBINSTEIN PROBLEM """
 n=100
 x = np.linspace(-1,1,n)
+h=x[1]-x[0]
 rho = np.zeros(n); rho[n//2]=3
 sigma = np.zeros(n);sigma[0]=1;sigma[-1]=2
 f=sigma-rho
@@ -34,9 +35,18 @@ plt.ylabel('Gradient Values',fontsize=24)
 plt.ylim(-2.1,2.1)
 plt.legend()
 plt.savefig('./out/kr_grads.pdf',format='pdf',bbox_inches='tight')
+plt.figure(tight_layout=True)
+plt.bar(x,rho, width = 3*h, label='$\\rho(x)$',color='k')
+plt.bar(x,sigma, width = 3*h, label='$\sigma(x)$',color='white')
+plt.plot(x,np.abs(prob.D1@prob.sol),'r--',linewidth=2,label='$|\\nabla\\phi|$')
+plt.xlabel('Domain $(x)$',fontsize=24)
+plt.ylabel('Gradient Values',fontsize=24)
+plt.ylim(0,3.1)
+plt.legend()
+plt.savefig('./out/kr.pdf',format='pdf',bbox_inches='tight')
 
 
-""" DESIGN PROBLEM """
+""" AGUMENTED KR PROBLEM """
 n=100
 x = np.linspace(-1,1,n)
 h=x[1]-x[0]

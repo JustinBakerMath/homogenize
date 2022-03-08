@@ -25,9 +25,11 @@ parser.add_argument('--out_interval',type=float,default=5,help='Interval to gene
 
 args,unknown=parser.parse_known_args()
 
+print(args)
+
 """SETUP"""
 #GRID
-n=m=5*10
+n=m=4*6
 h=1/(n-1)
 dt=1
 
@@ -41,10 +43,10 @@ domain_len=n*m
 
 #DISTRIBUTIONS
 rho=np.zeros(domain_shape)
-rho[0,n//4:3*n//4]=np.ones(n//2)
+rho[-1,n//4:3*n//4]=np.ones(n//2)
 
 sigma=np.zeros(domain_shape)
-sigma[-1,n//4:3*n//4]=np.ones(n//2)
+sigma[0,n//4:3*n//4]=np.ones(n//2)
 
 f=sigma.flatten()-rho.flatten()
 scale=np.sum(sigma)
