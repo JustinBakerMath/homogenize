@@ -3,8 +3,9 @@ import numpy as np
 import sys
 
 sys.path.append('./')
-from lib.classes.twist import twist1D
-from lib.classes.design import design1D
+
+from lib.krot import lin_krot
+from lib.design import design1D
 
 
 """ KANTOROVICH RUBINSTEIN PROBLEM """
@@ -17,7 +18,7 @@ f=sigma-rho
 Gc=np.ones(n);Gc[n//4:3*n//4]=2*np.ones(n//2)
 
 options={'diff':'ForwardEuler'}
-prob = twist1D(x,f,Gc,options)
+prob = lin_krot(x,f,Gc,options)
 prob.minimize()
 
 plt.style.use('classic')
