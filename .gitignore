@@ -12,3 +12,5 @@ ref/*
 ref/tex/*
 #Swap Files
 *.swp
+#Install Files
+**/homogenize.egg-info/*
