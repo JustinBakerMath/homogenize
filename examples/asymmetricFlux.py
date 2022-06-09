@@ -7,6 +7,7 @@ from homogenize.heatlens import robustHeatLens, plotDomain, plotSolution, plotIt
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--dout', metavar='out_dir', type=str, default='./out/asymmetricFlux/')
 parser.add_argument('--robust', action='store_true')
+parser.add_argument('--n', metavar='scale', type=int, default=4)
 parser.add_argument('--vol', metavar='volume_frac', type=float, default=0.0)
 parser.add_argument('--lv', metavar='eigen_value', type=float, default=0.0)
 parser.add_argument('--tk', metavar='step_size', type=float, default=0.02)
@@ -17,7 +18,7 @@ if not os.path.exists(args.dout):
 
 #GRID
 L = 2
-n,m=2*48,2*48
+n,m=args.n*3*4,args.n*3*4
 y=np.linspace(-L/2,L/2,n)
 x=np.linspace(-L/2,L/2,m)
 dx = L/(n+1)
@@ -45,7 +46,7 @@ gamma_loc[0,1:-1] = np.ones(n-2)
 gamma = np.zeros(domain_shape)
 gamma[0,3*n//8:5*n//8]=np.ones(n//4)
 #PROBLEM
-options={'lv':0, 'volume':.75, 'tk':.1,
+options={'lv':0, 'volume':.75, 'tk':.1,'alpha':1,'beta':.5,
          'gamma':gamma,'gamma_loc':gamma_loc,
          'rho_x':rho_x,'rho_xloc':rho_xloc,'rho1_xloc':rho1_xloc,'rho2_xloc':rho2_xloc,
          'rho_y':rho_y,'rho_yloc':rho_yloc,'rho1_yloc':rho1_yloc,'rho2_yloc':rho2_yloc,

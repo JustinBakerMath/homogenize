@@ -5,6 +5,7 @@ from .pdeint import *
 from .design import *
 
 plt.style.use('classic')
+cmap = 'copper'
 
 class heatLens():
     def __init__(self,x,y,options={}):
@@ -51,6 +52,7 @@ class heatLens():
         self.energies = []
         #TODO: history of volume fraction
         self.tolerance = self.options['tol']
+        self.A=genA(self.theta,self.phi,[self.m,self.n],alpha=self.options['alpha'],beta=self.options['beta'])
 
     def iterate(self,k):
         if self.options['verbose']:
@@ -70,9 +72,8 @@ class heatLens():
             beta=self.options['beta']
             tk=self.options['tk']
             #COEFFICIENTS
-            A=genA(self.theta,self.phi,[self.m,self.n],alpha=alpha,beta=beta)
-            self.fdm.A = A
-            self.fdf.A = A
+            self.fdm.A = self.A
+            self.fdf.A = self.A
             #PRIMAL SOLUTION VIA RESIDUAL
             primal_dirichlet_loc = self.gamma_loc
             primal_neumann_xloc = self.rho_xloc
@@ -120,6 +121,7 @@ class heatLens():
             self.energy = np.sum(self.gamma*(-self.Du[0]*self.y_loc-self.Du[1]*self.x_loc))#+np.sum(p.reshape(self.domain_shape)*self.fdf.divAgrad(u))
             self.energies += [self.energy]
             self.theta_vol = np.sum(self.theta*(self.dx*self.dy))
+            self.A=genA(self.theta,self.phi,[self.m,self.n],alpha=self.options['alpha'],beta=self.options['beta'])
 
     def check_options(self):
         assert ('gamma' in self.options) and ('gamma_loc' in self.options), 'No Dirichlet Conditions Provided.'
@@ -195,6 +197,7 @@ class robustHeatLens():
         self.energies2 = []
         #TODO: history of volume fraction
         self.tolerance = self.options['tol']
+        self.A=genA(self.theta,self.phi,[self.m,self.n],alpha=self.options['alpha'],beta=self.options['beta'])
 
     def iterate(self,k):
         if self.options['verbose']:
@@ -214,9 +217,8 @@ class robustHeatLens():
             beta=self.options['beta']
             tk=self.options['tk']
             #COEFFICIENTS
-            A=genA(self.theta,self.phi,[self.m,self.n],alpha=alpha,beta=beta)
-            self.fdm.A = A
-            self.fdf.A = A
+            self.fdm.A = self.A
+            self.fdf.A = self.A
             #PRIMAL SOLUTION VIA RESIDUAL
             primal_dirichlet_loc = self.gamma_loc
             primal_neumann_xloc = self.rho_xloc
@@ -291,6 +293,7 @@ class robustHeatLens():
             self.energies1 += [energy1]
             self.energies2 += [energy2]
             self.theta_vol = np.sum(self.theta*(self.dx*self.dy))
+            self.A=genA(self.theta,self.phi,[self.m,self.n],alpha=self.options['alpha'],beta=self.options['beta'])
 
     def check_options(self):
         assert ('gamma' in self.options) and ('gamma_loc' in self.options), 'No Dirichlet Conditions Provided.'
@@ -319,13 +322,13 @@ def plotDomain(lens,outDir):
     #DIRICHLET
     plt.figure(figsize=(4,4),tight_layout=True)
     outFile = outDir+'/dirichlet_conditions.pdf'
-    plt.imshow(lens.gamma[::-1],cmap='Greys',vmin=-1,vmax=1)
+    plt.imshow(lens.gamma[::-1],cmap=cmap,vmin=-1,vmax=1)
     plt.axis('off')
     plt.savefig(outFile,format='pdf',bbox_inches='tight')
     #NEUMANN
     plt.figure(figsize=(4,4),tight_layout=True)
     outFile = outDir+'/neumann_conditions.pdf'
-    plt.imshow(lens.rho_x[::-1]+lens.rho_y[::-1],cmap='Greys',vmin=-1,vmax=1)
+    plt.imshow(lens.rho_x[::-1]+lens.rho_y[::-1],cmap=cmap,vmin=-1,vmax=1)
     plt.axis('off')
     plt.savefig(outFile,format='pdf',bbox_inches='tight')
 
@@ -362,29 +365,45 @@ def plotSolution(lens,outDir):
     # THETA
     plt.figure(figsize=(4,4),tight_layout=True)
     outFile = outDir+'/theta.pdf'
-    plt.imshow(lens.theta.reshape(lens.domain_shape)[::-1],cmap='Greys',vmin=0,vmax=1)
+    plt.imshow(lens.theta.reshape(lens.domain_shape)[::-1],cmap=cmap,vmin=0,vmax=1)
     plt.colorbar(fraction=.047*imratio)
     plt.axis('off')
     plt.savefig(outFile,format='pdf',bbox_inches='tight')
     # PHI
     plt.figure(figsize=(4,4),tight_layout=True)
     outFile = outDir+'/phi.pdf'
-    plt.imshow(lens.phi.reshape(lens.domain_shape)[::-1],cmap='Greys',vmin=-2*np.pi,vmax=2*np.pi)
+    plt.imshow(lens.phi.reshape(lens.domain_shape)[::-1],cmap=cmap,vmin=-2*np.pi,vmax=2*np.pi)
     plt.colorbar(fraction=.047*imratio)
     plt.axis('off')
     plt.savefig(outFile,format='pdf',bbox_inches='tight')
     # U
     plt.figure(figsize=(4,4),tight_layout=True)
     outFile = outDir+'/u.pdf'
-    plt.imshow(lens.u.reshape(lens.domain_shape)[::-1],cmap='Greys')
+    plt.imshow(lens.u.reshape(lens.domain_shape)[::-1],cmap=cmap)
     plt.colorbar(fraction=.047*imratio)
     plt.axis('off')
     plt.savefig(outFile,format='pdf',bbox_inches='tight')
     # P
     plt.figure(figsize=(4,4),tight_layout=True)
     outFile = outDir+'/p.pdf'
-    plt.imshow(lens.p.reshape(lens.domain_shape)[::-1],cmap='Greys',vmin=-1,vmax=1)
+    plt.imshow(lens.p.reshape(lens.domain_shape)[::-1],cmap=cmap,vmin=-1,vmax=1)
     plt.colorbar(fraction=.047*imratio)
+    plt.axis('off')
+    plt.savefig(outFile,format='pdf',bbox_inches='tight')
+    # DOMINANT EIGS
+    plt.figure(figsize=(4,4),tight_layout=True)
+    outFile = outDir+'/eig.pdf'
+    vfeild = np.zeros([2]+list(lens.domain_shape))
+    for i in range(lens.domain_shape[0]):
+        for j in range(lens.domain_shape[1]):
+            w,v = np.linalg.eig(lens.A[...,i,j])
+            # SORT
+            idx = w.argsort()[::-1] 
+            w = w[idx]
+            v = v[:,idx]
+            vfield[:,i,j] = (w[0]-w[1])*v[:,0]
+    vfield = np.divide(vfield,np.fmax(1,np.linalg.norm(vfield, axis=0)))
+    plt.quiver(lens.xx[1:-1],lens.yy[1:-1],vfield[1][1:-1],vfield[0][1:-1])
     plt.axis('off')
     plt.savefig(outFile,format='pdf',bbox_inches='tight')
     #ROBUST
