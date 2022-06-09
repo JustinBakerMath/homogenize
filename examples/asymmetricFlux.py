@@ -17,7 +17,7 @@ if not os.path.exists(args.dout):
 
 #GRID
 L = 2
-n,m=48,48
+n,m=2*48,2*48
 y=np.linspace(-L/2,L/2,n)
 x=np.linspace(-L/2,L/2,m)
 dx = L/(n+1)

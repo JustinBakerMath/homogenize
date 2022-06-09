@@ -405,7 +405,7 @@ def plotSolution(lens,outDir):
         plt.savefig(outFile,format='pdf',bbox_inches='tight')
         # NABLA U1
         plt.figure(figsize=(4,4),tight_layout=True)
-        outFile = outDir+'/nabla_u2.pdf'
+        outFile = outDir+'/nabla_u1.pdf'
         vfield = np.divide(lens.Du1,np.fmax(1,np.linalg.norm(lens.Du1, axis=0)))
         plt.quiver(lens.xx[1:-1],lens.yy[1:-1],vfield[0][1:-1],vfield[1][1:-1])
         plt.axis('off')
