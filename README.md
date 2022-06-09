@@ -22,7 +22,7 @@ import homogenize
 To ensure that all methods run properly, consider runing the following with `python` or `python3` depending on your python executable.
 
 ```bash
-sh ./test.sh python3
+sh ./bin/test.sh python3
 ```
 
 Individual tests can be found in `./bin/`
@@ -32,7 +32,7 @@ Individual tests can be found in `./bin/`
 To generate a complete set of examples, consider runing the following with `python` or `python3` depending on your python executable.
 
 ```bash
-python3 ./examples/discrete_laplacian.py
+sh ./bin/examples.sh python3
 ```
 
 Individual examples can be found in `./bin/`
