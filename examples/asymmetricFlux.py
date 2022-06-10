@@ -7,7 +7,7 @@ from homogenize.heatlens import robustHeatLens, plotDomain, plotSolution, plotIt
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--dout', metavar='out_dir', type=str, default='./out/asymmetricFlux/')
 parser.add_argument('--robust', action='store_true')
-parser.add_argument('--n', metavar='scale', type=int, default=4)
+parser.add_argument('--n', metavar='scale', type=int, default=5)
 parser.add_argument('--vol', metavar='volume_frac', type=float, default=0.0)
 parser.add_argument('--lv', metavar='eigen_value', type=float, default=0.0)
 parser.add_argument('--tk', metavar='step_size', type=float, default=0.02)

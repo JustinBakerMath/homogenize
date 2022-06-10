@@ -5,7 +5,7 @@ from .pdeint import *
 from .design import *
 
 plt.style.use('classic')
-cmap = 'copper'
+cmap = 'coolwarm'
 
 class heatLens():
     def __init__(self,x,y,options={}):

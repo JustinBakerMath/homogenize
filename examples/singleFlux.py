@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--dout', metavar='out_dir', type=str, default='./out/singleFlux/')
 parser.add_argument('--vol', metavar='volume_frac', type=float, default=0.0)
 parser.add_argument('--lv', metavar='eigen_value', type=float, default=0.0)
-parser.add_argument('--tk', metavar='step_size', type=float, default=0.05)
+parser.add_argument('--tk', metavar='step_size', type=float, default=0.02)
 args = parser.parse_args()
 
 if not os.path.exists(args.dout):
