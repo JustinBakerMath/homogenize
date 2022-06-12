@@ -7,7 +7,7 @@ from homogenize.heatlens import heatLens, plotDomain, plotSolution, plotIterates
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--dout', metavar='out_dir', type=str, default='./out/singleFlux/')
 parser.add_argument('--vol', metavar='volume_frac', type=float, default=0.0)
-parser.add_argument('--lv', metavar='eigen_value', type=float, default=0.0)
+parser.add_argument('--constraint', action='store_true')
 parser.add_argument('--tk', metavar='step_size', type=float, default=0.02)
 args = parser.parse_args()
 
@@ -36,7 +36,7 @@ gamma_loc = np.zeros(domain_shape)
 gamma_loc[0,1:-1] = np.ones(n-2)
 gamma = np.zeros(domain_shape)
 gamma[0,3*n//8:5*n//8]=np.ones(n//4)
-options={'lv':args.lv, 'volume':args.vol, 'tk':args.tk,
+options={'tk':args.tk, 'volume':args.vol, 'constraint':args.constraint,
 	'gamma':gamma,'gamma_loc':gamma_loc,
 	'rho_x':rho_x,'rho_xloc':rho_xloc,
 	'rho_y':rho_y,'rho_yloc':rho_yloc,
