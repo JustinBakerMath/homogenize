@@ -1,3 +1,4 @@
+import matplotlib.animation as anim
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
@@ -8,7 +9,7 @@ plt.style.use('classic')
 cmap = 'coolwarm'
 
 class heatLens():
-    def __init__(self,x,y,options={}):
+    def __init__(self,x,y,options={})->None:
         #DOMAIN
         self.m=len(x)
         self.n=len(y)
@@ -51,11 +52,13 @@ class heatLens():
                         np.einsum('ijkl,jkl->ikl',a,c))
         self.energies = []
         #TODO: history of volume fraction
-        self.vols = []
+        self.VOLS = []
+        self.THETAS = []
         self.tolerance = self.options['tol']
         self.A=genA(self.theta,self.phi,[self.m,self.n],alpha=self.options['alpha'],beta=self.options['beta'])
+        pass
 
-    def iterate(self,k):
+    def iterate(self,k)->None:
         if self.options['verbose']:
             pbar = tqdm(range(k))
         else:
@@ -65,9 +68,10 @@ class heatLens():
                 break
             self._iter()
             if self.options['verbose']:
-                pbar.set_description(desc="{:.2e}".format(self.lam))
+                pbar.set_description(desc="{:.2e}".format(self.energies[-1]))
+        pass
 
-    def _iter(self):
+    def _iter(self)->None:
         #INITIALIZE
         alpha=self.options['alpha']
         beta=self.options['beta']
@@ -112,7 +116,8 @@ class heatLens():
                 self.phi[i,j]=self.phi[i,j]+tk*(A_p@Du[:,i,j]@Dp[:,i,j])
         if self.options['constraint']:
             self.lv = max(0,self.lv + tk*(np.sum(self.theta)*self.dx*self.dy-self.vol))
-        self.vols += [np.sum(self.theta)*self.dx*self.dy]
+        self.VOLS += [np.sum(self.theta)*self.dx*self.dy]
+        self.THETAS += [self.theta.copy()]
         self.options['tk'] = .975*tk
         #SOLUTION DATA
         self.u = u
@@ -126,6 +131,7 @@ class heatLens():
         self.energies += [self.energy]
         self.theta_vol = np.sum(self.theta*(self.dx*self.dy))
         self.A=genA(self.theta,self.phi,[self.m,self.n],alpha=self.options['alpha'],beta=self.options['beta'])
+        pass
 
     def check_options(self):
         assert ('gamma' in self.options) and ('gamma_loc' in self.options), 'No Dirichlet Conditions Provided.'
@@ -200,7 +206,8 @@ class robustHeatLens():
         self.energies1 = []
         self.energies2 = []
         #TODO: history of volume fraction
-        self.vols = []
+        self.VOLS = []
+        self.THETAS = []
         self.tolerance = self.options['tol']
         self.A=genA(self.theta,self.phi,[self.m,self.n],alpha=self.options['alpha'],beta=self.options['beta'])
 
@@ -280,7 +287,8 @@ class robustHeatLens():
                 self.phi[i,j]=self.phi[i,j]+tk*(A_p@Du[:,i,j]@Dp[:,i,j])
         if self.options['constraint']:
             self.lv = max(0,self.lv + tk*(np.sum(self.theta)*self.dx*self.dy-self.vol))
-        self.vols += [np.sum(self.theta)*self.dx*self.dy]
+        self.VOLS += [np.sum(self.theta)*self.dx*self.dy]
+        self.THETAS += [self.theta.copy()]
         self.options['tk'] = .975*tk
         #SOLUTION DATA
         self.u = u
@@ -449,8 +457,19 @@ def plotIterates(lens,outDir):
     # VOL FRAC
     plt.figure(figsize=(4,4),tight_layout=True)
     outFile = outDir+'/volfrac.pdf'
-    plt.plot(lens.vols)
+    plt.plot(lens.VOLS)
     plt.savefig(outFile,format='pdf',bbox_inches='tight')
+    #THETA ANIM
+    fig = plt.figure(figsize=(4,4),tight_layout=True)
+    outFile = outDir+'/theta_anim.gif'
+    ax = fig.gca()
+    lines=[ax.imshow(lens.THETAS[0][::-1],cmap=cmap)]
+    def theta_update(idx):
+        lines[0].set_data(lens.THETAS[idx+1][::-1])
+        return lines
+    ani = anim.FuncAnimation(fig,theta_update,frames=len(lens.THETAS)-1,
+            interval = len(lens.THETAS)-5,blit=False)
+    ani.save(outFile,"PillowWriter",fps=3)
     # ENERGIES
     if isinstance(lens,robustHeatLens):
         plt.figure(figsize=(4,4),tight_layout=True)
