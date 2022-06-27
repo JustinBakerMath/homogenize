@@ -115,7 +115,11 @@ class heatLens():
                 A_p=A_phi(self.theta[i,j],self.phi[i,j],alpha=alpha,beta=beta)
                 self.phi[i,j]=self.phi[i,j]+tk*(A_p@Du[:,i,j]@Dp[:,i,j])
         if self.options['constraint']:
-            self.lv = max(0,self.lv + tk*(np.sum(self.theta)*self.dx*self.dy-self.vol))
+            if (np.sum(self.theta)*self.dx*self.dy-self.vol)<0:
+                self.lv = 0
+            else:
+                self.lv = self.options['lv_max']
+            #self.lv = max(0,self.lv + tk*(np.sum(self.theta)*self.dx*self.dy-self.vol))
         self.VOLS += [np.sum(self.theta)*self.dx*self.dy]
         self.THETAS += [self.theta.copy()]
         self.options['tk'] = .975*tk
@@ -144,6 +148,8 @@ class heatLens():
             self.options['tk']=.1
         if not('lv' in self.options):
             self.options['lv']=0
+        if not('lv_max' in self.options):
+            self.options['lv_max']=1
         if not('volume' in self.options):
             self.options['volume']=.5
         if not('tol' in self.options):

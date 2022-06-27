@@ -14,17 +14,26 @@ $1 ./examples/singleFlux.py
 echo "* Split Flux Non-Robust"
 FILES="./out/splitFlux/*.pdf"
 rm -r $FILES
-$1 ./examples/splitFlux.py
+$1 ./examples/splitFlux.py \
+	--beta=.9 \
+	--scale=5 \
+	--tk .001
 
 echo "* Split Flux Robust"
 FILES="./out/splitFluxRobust/*.pdf"
 rm -r $FILES
-$1 ./examples/splitFlux.py --robust --dout ./out/splitFluxRobust/ 
+$1 ./examples/splitFlux.py --robust --dout ./out/splitFluxRobust/ \
+	--beta=.9 \
+	--scale=5 \
+	--tk .001
 
 echo "* Split Flux Volume"
 FILES="./out/splitFluxVol/*.pdf"
 rm -r $FILES
-$1 ./examples/splitFlux.py --robust --constraint --dout ./out/splitFluxVol/ --vol 0.1 
+$1 ./examples/splitFlux.py --robust --constraint --dout ./out/splitFluxVol/ --vol 0.1  \
+	--beta=.9 \
+	--scale=5 \
+	--tk .001
 
 exit 1
 
