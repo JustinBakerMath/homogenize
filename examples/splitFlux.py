@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import argparse
 import numpy as np
 import os
@@ -9,10 +10,11 @@ parser.add_argument('--dout', metavar='out_dir', type=str, default='./out/splitF
 parser.add_argument('--robust', action='store_true')
 parser.add_argument('--constraint', action='store_true')
 parser.add_argument('--scale', type=int, default=5)
-parser.add_argument('--vol', metavar='volume_frac', type=float, default=0.0)
-parser.add_argument('--tk', metavar='step_size', type=float, default=0.05)
+parser.add_argument('--vol', metavar='volume_frac', type=float, default=1.0)
+parser.add_argument('--lv', metavar='lam', type=float, default=1.0)
+parser.add_argument('--tk', metavar='step_size', type=float, default=0.1)
 parser.add_argument('--alpha', type=float, default=1.0)
-parser.add_argument('--beta', type=float, default=0.1)
+parser.add_argument('--beta', type=float, default=0.9)
 args = parser.parse_args()
 
 if not os.path.exists(args.dout):
@@ -48,8 +50,8 @@ gamma_loc[0,1:-1] = np.ones(n-2)
 gamma = np.zeros(domain_shape)
 gamma[0,3*n//8:5*n//8]=np.ones(n//4)
 #PROBLEM
-options={'alpha':args.alpha,'beta':args.beta,
-         'tk':1, 'constrained':args.constraint, 'volume':args.vol,
+options={'alpha':args.alpha,'beta':args.beta, 'constraint':args.constraint,
+         'tk':args.tk, 'lv':args.lv, 'volume':args.vol,
          'gamma':gamma,'gamma_loc':gamma_loc,
          'rho_x':rho_x,'rho_xloc':rho_xloc,'rho1_xloc':rho1_xloc,'rho2_xloc':rho2_xloc,
          'rho_y':rho_y,'rho_yloc':rho_yloc,'rho1_yloc':rho1_yloc,'rho2_yloc':rho2_yloc,

@@ -43,7 +43,7 @@ class heatLens():
         self.p=np.zeros(self.domain_len)
         self.theta=np.zeros(self.domain_shape)#0.1*np.random.rand(self.domain_len).reshape(self.domain_shape)#
         self.phi=np.zeros(self.domain_shape)#np.pi*np.random.rand(self.domain_len).reshape(self.domain_shape)#
-        self.lv=0
+        self.lv=self.options['lv']
         self.vol=self.options['volume']
         #DIFFERENCES
         self.fdf = FiniteDifferenceFunctions(self.m,self.n,self.dx,self.dy)
@@ -68,7 +68,7 @@ class heatLens():
                 break
             self._iter()
             if self.options['verbose']:
-                pbar.set_description(desc="{:.2e}".format(self.energies[-1]))
+                pbar.set_description(desc="{:.1e}".format(self.energies[-1]))
         pass
 
     def _iter(self)->None:
@@ -108,18 +108,14 @@ class heatLens():
         for i in range(self.m):
             for j in range(self.n):
                 A_t=A_theta(self.theta[i,j],self.phi[i,j],alpha=alpha,beta=beta)
-                rhs=self.theta[i,j]+tk*(-self.lv+A_t@Du[:,i,j]@Dp[:,i,j])
+                rhs=self.theta[i,j]+tk*(self.lv+A_t@Du[:,i,j]@Dp[:,i,j])
                 self.theta[i,j]=max([0,min([1,rhs])])
         for i in range(self.m):
             for j in range(self.n):
                 A_p=A_phi(self.theta[i,j],self.phi[i,j],alpha=alpha,beta=beta)
                 self.phi[i,j]=self.phi[i,j]+tk*(A_p@Du[:,i,j]@Dp[:,i,j])
         if self.options['constraint']:
-            if (np.sum(self.theta)*self.dx*self.dy-self.vol)<0:
-                self.lv = 0
-            else:
-                self.lv = self.options['lv_max']
-            #self.lv = max(0,self.lv + tk*(np.sum(self.theta)*self.dx*self.dy-self.vol))
+            self.lv = 0 if np.sum(self.theta)*self.dx*self.dy-self.vol<0 else self.options['lv']
         self.VOLS += [np.sum(self.theta)*self.dx*self.dy]
         self.THETAS += [self.theta.copy()]
         self.options['tk'] = .975*tk
@@ -199,7 +195,7 @@ class robustHeatLens():
         self.p=np.zeros(self.domain_len)
         self.theta=np.zeros(self.domain_shape)#0.1*np.random.rand(self.domain_len).reshape(self.domain_shape)#
         self.phi=np.zeros(self.domain_shape)#np.pi*np.random.rand(self.domain_len).reshape(self.domain_shape)#
-        self.lv=0
+        self.lv=self.options['lv']
         self.vol=self.options['volume']
         #DIFFERENCES
         self.fdf = FiniteDifferenceFunctions(self.m,self.n,self.dx,self.dy)
@@ -227,7 +223,7 @@ class robustHeatLens():
                 break
             self._iter()
             if self.options['verbose']:
-                pbar.set_description(desc="{:.2e}".format(self.lam))
+                pbar.set_description(desc="{:.1e}".format(self.lv))
 
     def _iter(self):
         #INITIALIZE
@@ -285,14 +281,15 @@ class robustHeatLens():
         for i in range(self.m):
             for j in range(self.n):
                 A_t=A_theta(self.theta[i,j],self.phi[i,j],alpha=alpha,beta=beta)
-                rhs=self.theta[i,j]+tk*(-self.lv+A_t@Du[:,i,j]@Dp[:,i,j])
+                rhs=self.theta[i,j]+tk*(self.lv+A_t@Du[:,i,j]@Dp[:,i,j])
                 self.theta[i,j]=max([0,min([1,rhs])])
         for i in range(self.m):
             for j in range(self.n):
                 A_p=A_phi(self.theta[i,j],self.phi[i,j],alpha=alpha,beta=beta)
                 self.phi[i,j]=self.phi[i,j]+tk*(A_p@Du[:,i,j]@Dp[:,i,j])
         if self.options['constraint']:
-            self.lv = max(0,self.lv + tk*(np.sum(self.theta)*self.dx*self.dy-self.vol))
+            #self.lv = max(0,self.lv + tk*(np.sum(self.theta)*self.dx*self.dy-self.vol))
+            self.lv = 0 if np.sum(self.theta)*self.dx*self.dy-self.vol<0 else self.options['lv']
         self.VOLS += [np.sum(self.theta)*self.dx*self.dy]
         self.THETAS += [self.theta.copy()]
         self.options['tk'] = .975*tk
