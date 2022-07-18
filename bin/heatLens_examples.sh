@@ -6,18 +6,18 @@ fi
 
 echo "Running Heat Lens Examples using $1"
 
-echo "* Single Flux"
-FILES="./out/singleFlux/*.pdf"
-rm -r $FILES
-$1 ./examples/singleFlux.py
+#echo "* Single Flux"
+#FILES="./out/singleFlux/*.pdf"
+#rm -r $FILES
+#$1 ./examples/singleFlux.py
 
-echo "* Split Flux Non-Robust"
-FILES="./out/splitFlux/*.pdf"
-rm -r $FILES
-$1 ./examples/splitFlux.py \
-	--beta=.9 \
-	--scale=5 \
-	--tk .001
+#echo "* Split Flux Non-Robust"
+#FILES="./out/splitFlux/*.pdf"
+#rm -r $FILES
+#$1 ./examples/splitFlux.py \
+	#--beta=.9 \
+	#--scale=5 \
+	#--tk .001
 
 echo "* Split Flux Robust"
 FILES="./out/splitFluxRobust/*.pdf"
@@ -26,6 +26,8 @@ $1 ./examples/splitFlux.py --robust --dout ./out/splitFluxRobust/ \
 	--beta=.9 \
 	--scale=5 \
 	--tk .001
+
+exit 1
 
 echo "* Split Flux Volume"
 FILES="./out/splitFluxVol/*.pdf"
