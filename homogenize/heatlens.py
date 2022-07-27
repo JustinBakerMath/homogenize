@@ -53,6 +53,7 @@ class heatLens():
         self.energies = []
         #TODO: history of volume fraction
         self.VOLS = []
+        self.LVS = []
         self.THETAS = []
         self.tolerance = self.options['tol']
         self.A=genA(self.theta,self.phi,[self.m,self.n],alpha=self.options['alpha'],beta=self.options['beta'])
@@ -117,6 +118,7 @@ class heatLens():
         if self.options['constraint']:
             self.lv = 0 if np.sum(self.theta)*self.dx*self.dy-self.vol<0 else self.options['lv']
         self.VOLS += [np.sum(self.theta)*self.dx*self.dy]
+        self.LVS += [self.lv]
         self.THETAS += [self.theta.copy()]
         self.options['tk'] = .975*tk
         #SOLUTION DATA
@@ -149,7 +151,7 @@ class heatLens():
         if not('volume' in self.options):
             self.options['volume']=.5
         if not('tol' in self.options):
-            self.options['tol']=.01
+            self.options['tol']=1e-3
         if not('verbose' in self.options):
             self.options['verbose']=False
         pass
@@ -209,6 +211,7 @@ class robustHeatLens():
         self.energies2 = []
         #TODO: history of volume fraction
         self.VOLS = []
+        self.LVS = []
         self.THETAS = []
         self.tolerance = self.options['tol']
         self.A=genA(self.theta,self.phi,[self.m,self.n],alpha=self.options['alpha'],beta=self.options['beta'])
@@ -289,8 +292,11 @@ class robustHeatLens():
                 self.phi[i,j]=self.phi[i,j]+tk*(A_p@Du[:,i,j]@Dp[:,i,j])
         if self.options['constraint']:
             #self.lv = max(0,self.lv + tk*(np.sum(self.theta)*self.dx*self.dy-self.vol))
+            print(np.sum(self.theta)*self.dx*self.dy-self.vol<0,np.sum(self.theta)*self.dx*self.dy,self.vol)
             self.lv = 0 if np.sum(self.theta)*self.dx*self.dy-self.vol<0 else self.options['lv']
+        #check min/max theta is 0,1
         self.VOLS += [np.sum(self.theta)*self.dx*self.dy]
+        self.LVS += [self.lv]
         self.THETAS += [self.theta.copy()]
         self.options['tk'] = .975*tk
         #SOLUTION DATA
@@ -462,11 +468,16 @@ def plotIterates(lens,outDir):
     outFile = outDir+'/volfrac.pdf'
     plt.plot(lens.VOLS)
     plt.savefig(outFile,format='pdf',bbox_inches='tight')
+    # LVS 
+    plt.figure(figsize=(4,4),tight_layout=True)
+    outFile = outDir+'/lvs.pdf'
+    plt.plot(lens.LVS)
+    plt.savefig(outFile,format='pdf',bbox_inches='tight')
     #THETA ANIM
     fig = plt.figure(figsize=(4,4),tight_layout=True)
     outFile = outDir+'/theta_anim.gif'
     ax = fig.gca()
-    lines=[ax.imshow(lens.THETAS[0][::-1],cmap=cmap)]
+    lines=[ax.imshow(lens.THETAS[0][::-1],cmap=cmap,vmin=0,vmax=1)]
     def theta_update(idx):
         lines[0].set_data(lens.THETAS[idx+1][::-1])
         return lines

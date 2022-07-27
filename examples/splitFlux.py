@@ -57,7 +57,7 @@ options={'alpha':args.alpha,'beta':args.beta, 'constraint':args.constraint,
          'rho_y':rho_y,'rho_yloc':rho_yloc,'rho1_yloc':rho1_yloc,'rho2_yloc':rho2_yloc,
          'robust':args.robust,'verbose':True}
 prob = robustHeatLens(x,y,options)
-prob.iterate(100)
+prob.iterate(200)
 #OUTPUT
 plotDomain(prob,args.dout)
 plotSolution(prob,args.dout)
